@@ -45,7 +45,7 @@ jobs:
       run: |
         pwd
         terraform fmt -check
-        echo " $TEST ""
+        echo " $TEST "
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
