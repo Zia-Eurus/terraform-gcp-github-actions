@@ -10,7 +10,8 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-
+    env:
+        GLOBAL_ENV: "global"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
@@ -32,6 +33,7 @@ jobs:
       run: |
         pwd
         terraform init
+        export TEST="123"
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
@@ -41,6 +43,7 @@ jobs:
       run: |
         pwd
         terraform fmt -check
+        echo ${TEST}
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -48,6 +51,7 @@ jobs:
       run: |
         pwd
         terraform plan -lock=false
+        echo ${GLOBAL_ENV}
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
