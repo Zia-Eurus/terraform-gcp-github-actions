@@ -26,6 +26,11 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
+    
+    - id: Google auth
+      uses: google-github-actions/auth@v0.4.0
+      with:
+        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -36,7 +41,7 @@ jobs:
         export TEST="123"
         echo " $INIT "
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        # GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         INIT: init
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -55,8 +60,8 @@ jobs:
         pwd
         terraform plan -lock=false
         echo " $GLOBAL_ENV "
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # env:
+        # GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -66,5 +71,5 @@ jobs:
       run: |
         pwd
         terraform apply -auto-approve -lock=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # env:
+      #   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
