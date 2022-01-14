@@ -46,6 +46,7 @@ jobs:
         pwd
         terraform fmt -check
         echo " $TEST "
+        echo " $INIT "
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
