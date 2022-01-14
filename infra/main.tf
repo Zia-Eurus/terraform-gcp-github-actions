@@ -1,3 +1,5 @@
-resource "google_storage_bucket" "bucket" {
-  name = "zia-test-bucket-from-pipeline"
+resource "null_resource" "this" {
+  provisioner "local-exec" {
+    command = "echo hello world"
+  }
 }
