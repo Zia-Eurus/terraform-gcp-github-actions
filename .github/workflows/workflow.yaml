@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
         GLOBAL_ENV: "global"
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
@@ -27,10 +28,10 @@ jobs:
       uses: hashicorp/setup-terraform@v1
 
     
-    - id: 'auth'
-      uses: google-github-actions/auth@v0.4.0
-      with:
-        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+    # - id: 'auth'
+    #   uses: google-github-actions/auth@v0.4.0
+    #   with:
+    #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
