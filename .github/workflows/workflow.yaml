@@ -29,19 +29,25 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./infra
-      run: terraform init
+      run: |
+        pwd
+        terraform init
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       working-directory: ./infra
-      run: terraform fmt -check
+      run: |
+        pwd
+        terraform fmt -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./infra
-      run: terraform plan -lock=false
+      run: |
+        pwd
+        terraform plan -lock=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
@@ -50,6 +56,8 @@ jobs:
     - name: Terraform Apply
       working-directory: ./infra
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve
+      run: |
+        pwd
+        terraform apply -auto-approve -lock=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
