@@ -34,8 +34,10 @@ jobs:
         pwd
         terraform init
         export TEST="123"
+        echo " $INIT "
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        INIT: init
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -43,7 +45,7 @@ jobs:
       run: |
         pwd
         terraform fmt -check
-        echo ${TEST}
+        echo " $TEST ""
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -51,7 +53,7 @@ jobs:
       run: |
         pwd
         terraform plan -lock=false
-        echo ${GLOBAL_ENV}
+        echo " $GLOBAL_ENV "
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
