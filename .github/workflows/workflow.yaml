@@ -2,6 +2,10 @@ name: 'Terraform CI'
 
 on:
   workflow_dispatch:
+    inputs:
+      customer_name:
+        description: 'Name of the customer'
+        required: true
   # push:
   #   branches:
   #   - main
@@ -18,7 +22,7 @@ jobs:
         run: echo Hello, world!
 
   reusable:
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.event.inputs.customer_name  == 'dev' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
@@ -28,6 +32,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.customer_name  == 'prod' }}
     env:
         GLOBAL_ENV: "global"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
