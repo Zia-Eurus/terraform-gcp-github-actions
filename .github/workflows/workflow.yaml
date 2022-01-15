@@ -7,12 +7,19 @@ on:
   pull_request:
 
 jobs:
+  reusable:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusabl-workflow.yaml@main
+    with:
+      directory_path: ./infra
+    secrets:
+      GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
+  
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
     env:
         GLOBAL_ENV: "global"
-        # GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
@@ -42,7 +49,6 @@ jobs:
         export TEST="123"
         echo " $INIT "
       env:
-        # GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         INIT: init
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -61,8 +67,6 @@ jobs:
         pwd
         terraform plan -lock=false
         echo " $GLOBAL_ENV "
-      # env:
-        # GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -72,5 +76,3 @@ jobs:
       run: |
         pwd
         terraform apply -auto-approve -lock=false
-      # env:
-      #   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
