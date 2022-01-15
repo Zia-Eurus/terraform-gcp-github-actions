@@ -7,13 +7,22 @@ on:
   pull_request:
 
 jobs:
+  do-it:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run a one-line script
+        run: echo Hello, world!
+
   reusable:
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusabl-workflow.yaml@main
     with:
       directory_path: ./infra
     secrets:
-      GOOGLE_CREDENTIALS: ${{secrets.GOOGLE_CREDENTIALS}}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   
   terraform:
     name: 'Terraform'
