@@ -19,8 +19,8 @@ jobs:
   reusable:
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusabl-workflow.yaml@main
-    with:
-      directory_path: ./infra
+    # with:
+    #   directory_path: "./infra"
     secrets:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   
