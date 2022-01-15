@@ -2,10 +2,10 @@ name: Reusable work flow
 
 on:
   workflow_call:
-    # inputs:
-    #   directory_path:
-    #     required: true
-    #     type: string
+    inputs:
+      directory_path:
+        required: true
+        type: string
     secrets:
       GOOGLE_CREDENTIALS:
         required: true
