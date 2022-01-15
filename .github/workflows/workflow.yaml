@@ -61,6 +61,7 @@ jobs:
       run: |
         pwd
         terraform init
+        echo "final_tag=latest" >> $GITHUB_ENV
         export TEST="123"
         echo " $INIT "
       env:
@@ -82,6 +83,7 @@ jobs:
         pwd
         terraform plan -lock=false
         echo " $GLOBAL_ENV "
+        echo " $final_tag "
 
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
