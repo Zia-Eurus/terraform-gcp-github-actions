@@ -22,16 +22,22 @@ jobs:
         run: echo Hello, world!
 
   reusable:
+    name: 'Terraform prod'
+    
     if: ${{ github.event.inputs.customer_name  == 'dev' }}
+    needs: [do-it]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
+      environment: 'prod'
     secrets:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   
   terraform:
-    name: 'Terraform'
+    name: 'Terraform dev'
     runs-on: ubuntu-latest
+    environment: 'dev'
+    needs: [do-it]
     if: ${{ github.event.inputs.customer_name  == 'prod' }}
     env:
         GLOBAL_ENV: "global"
