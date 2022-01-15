@@ -21,80 +21,85 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
 
-  reusable:
-    name: 'Terraform prod'
-    if: ${{ github.event.inputs.customer_name  == 'prod' }}
+  Dev:
+    name: 'Terraform Dev'
+    if: ${{ github.event.inputs.customer_name  == 'dev' }}
     needs: [do-it]
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+    with:
+      directory_path: ./infra
+      environment: 'dev'
+    secrets:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  
+  Prod:
+    name: 'Terraform prod'
+    needs: [do-it]
+    if: ${{ github.event.inputs.customer_name  == 'prod' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
       environment: 'prod'
     secrets:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      
+    # env:
+    #     GLOBAL_ENV: "global"
+    # # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # defaults:
+    #   run:
+    #     shell: bash
+
+    # steps:
+    # # Checkout the repository to the GitHub Actions runner
+    # - name: Checkout
+    #   uses: actions/checkout@v2
+
+    # # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    # - name: Setup Terraform
+    #   uses: hashicorp/setup-terraform@v1
   
-  terraform:
-    name: 'Terraform dev'
-    runs-on: ubuntu-latest
-    environment: 'dev'
-    needs: [do-it]
-    if: ${{ github.event.inputs.customer_name  == 'dev' }}
-    env:
-        GLOBAL_ENV: "global"
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
+    # - id: 'auth'
+    #   name: Google Auth
+    #   uses: google-github-actions/auth@v0.4.0
+    #   with:
+    #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-    steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
+    # # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    # - name: Terraform Init
+    #   working-directory: ./infra
+    #   run: |
+    #     pwd
+    #     terraform init
+    #     echo "final_tag=latest" >> $GITHUB_ENV
+    #     export TEST="123"
+    #     echo " $INIT "
+    #   env:
+    #     INIT: init
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-  
-    - id: 'auth'
-      name: Google Auth
-      uses: google-github-actions/auth@v0.4.0
-      with:
-        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+    # # Checks that all Terraform configuration files adhere to a canonical format
+    # - name: Terraform Format
+    #   working-directory: ./infra
+    #   run: |
+    #     pwd
+    #     terraform fmt -check
+    #     echo " $TEST "
+    #     echo " $INIT "
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      working-directory: ./infra
-      run: |
-        pwd
-        terraform init
-        echo "final_tag=latest" >> $GITHUB_ENV
-        export TEST="123"
-        echo " $INIT "
-      env:
-        INIT: init
+    # # Generates an execution plan for Terraform
+    # - name: Terraform Plan
+    #   working-directory: ./infra
+    #   run: |
+    #     pwd
+    #     terraform plan -lock=false
+    #     echo " $GLOBAL_ENV "
+    #     echo " $final_tag "
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: ./infra
-      run: |
-        pwd
-        terraform fmt -check
-        echo " $TEST "
-        echo " $INIT "
-
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./infra
-      run: |
-        pwd
-        terraform plan -lock=false
-        echo " $GLOBAL_ENV "
-        echo " $final_tag "
-
-      # On push to main, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      working-directory: ./infra
-      if: github.ref == 'refs/heads/main' #&& github.event_name == 'push'
-      run: |
-        pwd
-        terraform apply -auto-approve -lock=false
+    #   # On push to main, build or change infrastructure according to Terraform configuration files
+    #   # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    # - name: Terraform Apply
+    #   working-directory: ./infra
+    #   if: github.ref == 'refs/heads/main' #&& github.event_name == 'push'
+    #   run: |
+    #     pwd
+    #     terraform apply -auto-approve -lock=false
