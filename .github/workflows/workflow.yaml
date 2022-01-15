@@ -23,8 +23,7 @@ jobs:
 
   reusable:
     name: 'Terraform prod'
-    
-    if: ${{ github.event.inputs.customer_name  == 'dev' }}
+    if: ${{ github.event.inputs.customer_name  == 'prod' }}
     needs: [do-it]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
@@ -38,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'dev'
     needs: [do-it]
-    if: ${{ github.event.inputs.customer_name  == 'prod' }}
+    if: ${{ github.event.inputs.customer_name  == 'dev' }}
     env:
         GLOBAL_ENV: "global"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
