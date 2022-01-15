@@ -43,6 +43,7 @@ jobs:
       working-directory: ${{ inputs.directory_path }}
       run: |
         pwd
+        gcloud version
         terraform init
 
     - name: Terraform Format
