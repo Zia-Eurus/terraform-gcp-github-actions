@@ -24,7 +24,8 @@ jobs:
 
       - name: Run a one-line script
         run: |
-          apt-get update && apt-get install -y gettext-base
+          apt-get update && apt-get install -y \
+          gettext-base
 
   Dev:
     name: 'Terraform Dev'
