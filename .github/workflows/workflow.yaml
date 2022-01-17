@@ -28,11 +28,16 @@ jobs:
           gettext-base
           gcloud version
         # After Install package any single command is mandarory either echo "Hello"
-      - name: ASM Destruction
+      - name: GITHUB_ENV & EXPORT
         run: |
           echo "CUSTOMER_NAME=${{ inputs.customer_name }}" >> $GITHUB_ENV
           export CUSTOMER_NAME_EXPORT="${{ inputs.customer_name }}"
           gcloud version
+          echo ${CUSTOMER_NAME}
+          echo ${CUSTOMER_NAME_EXPORT}
+        
+      - name: ECHO GITHUB_ENV & EXPORT
+        run: |
           echo ${CUSTOMER_NAME}
           echo ${CUSTOMER_NAME_EXPORT}
 
