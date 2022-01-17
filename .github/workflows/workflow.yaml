@@ -28,6 +28,11 @@ jobs:
           gettext-base
           gcloud version
         # After Install package any single command is mandarory either echo "Hello"
+      - name: ASM Destruction
+        run: |
+          echo "CUSTOMER_NAME=${{ inputs.customer_name }}" >> $GITHUB_ENV
+          gcloud version
+          echo ${CUSTOMER_NAME}
 
   Dev:
     name: 'Terraform Dev'
