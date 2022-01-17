@@ -9,9 +9,9 @@ on:
       environment:
         required: true
         type: string
-    # secrets:
-    #   GOOGLE_CREDENTIALS:
-    #     required: true
+    secrets:
+      GOOGLE_CREDENTIALS:
+        required: true
 
 jobs:
   terraform:
