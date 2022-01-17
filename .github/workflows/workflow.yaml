@@ -17,9 +17,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        name: code Checkout
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
       - name: Run a one-line script
-        run: echo Hello, world!
+        run: |
+          gcloud version
+          echo Hello, world!
 
   Dev:
     name: 'Terraform Dev'
