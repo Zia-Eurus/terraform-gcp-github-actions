@@ -9,15 +9,17 @@ on:
       environment:
         required: true
         type: string
-    secrets:
-      GOOGLE_CREDENTIALS:
-        required: true
+    # secrets:
+    #   GOOGLE_CREDENTIALS:
+    #     required: true
 
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    env:
+      INIT: init
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:

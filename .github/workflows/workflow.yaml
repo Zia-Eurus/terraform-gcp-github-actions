@@ -29,8 +29,8 @@ jobs:
     with:
       directory_path: ./infra
       environment: 'dev'
-    secrets:
-      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+    #secrets:
+    #  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   
   Prod:
     name: 'Terraform prod'
