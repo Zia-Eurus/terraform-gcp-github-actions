@@ -26,7 +26,8 @@ jobs:
         run: |
           apt-get update && apt-get install -y \
           gettext-base
-          gcloud version
+          jq -Version
+        # gcloud version
         # After Install package any single command is mandarory either echo "Hello"
       - name: GITHUB_ENV & EXPORT
         run: |
