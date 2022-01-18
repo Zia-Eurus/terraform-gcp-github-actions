@@ -24,9 +24,10 @@ jobs:
 
       - name: Run a one-line script
         run: |
-          apt-get update && apt-get install -y \
-          gettext-base
+          envsubst -V
           jq -Version
+        # apt-get update && apt-get install -y \
+        # gettext-base
         # gcloud version
         # After Install package any single command is mandarory either echo "Hello"
       - name: GITHUB_ENV & EXPORT
