@@ -10,6 +10,9 @@ on:
         required: true
         type: string
 
+concurrency: 
+  group: ${{ inputs.environment }}-${{ github.head_ref }}
+
 jobs:
   terraform:
     name: 'Terraform'

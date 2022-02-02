@@ -14,7 +14,8 @@ on:
 jobs:
   do-it:
     runs-on: ubuntu-latest
-
+    concurrency: 
+      group: ${{ github.event.inputs.customer_name }}-dns-build
     steps:
       - uses: actions/checkout@v2
         name: code Checkout
