@@ -12,7 +12,9 @@ on:
 
 concurrency: 
   group: ${{ inputs.environment }}-${{ github.head_ref }}
-
+permissions:
+  contents: 'read'
+  id-token: 'write'
 jobs:
   terraform:
     name: 'Terraform'
