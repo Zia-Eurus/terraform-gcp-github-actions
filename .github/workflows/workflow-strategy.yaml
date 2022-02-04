@@ -1,0 +1,75 @@
+name: 'workflow_dispatch CI'
+
+on: workflow_dispatch
+
+jobs:
+  do-it:
+    runs-on: ubuntu-latest
+    outputs:
+       matrix: ${{ steps.setmatrix.outputs.matrix }}
+    concurrency: 
+      group: ${{ github.event.inputs.customer_name }}-${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@v2
+        name: code Checkout
+
+      - name: GITHUB_ENV & EXPORT
+        run: |
+          echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
+          export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
+          gcloud version
+          echo ${CUSTOMER_NAME}
+          echo ${CUSTOMER_NAME_EXPORT}
+        
+      - name: ECHO GITHUB_ENV & EXPORT
+        run: |
+          echo ${CUSTOMER_NAME}
+          echo ${CUSTOMER_NAME_EXPORT}
+
+      - id: setmatrix
+        name: Set Dynamic Matrix
+        run: |
+           matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\"},{\"env\":\"prod\",\"bucket\":\"bucket-prod\"}]}"
+           echo "::set-output name=matrix::$matrixStringifiedObject"
+  plan:
+    runs-on: ubuntu-latest
+    needs: [do-it]
+    outputs:
+      env_name: ${{ steps.step1.outputs.env }}
+    strategy:
+      matrix: ${{ fromJson(needs.do-it.outputs.matrix) }}
+      fail-fast: false
+    concurrency: 
+      group: ${{ matrix.env }}-${{ github.head_ref }}
+    env:
+      BACKEND_BUCKET: ${{ matrix.bucket }}
+      ENV: ${{ matrix.env }}
+    steps:
+      - uses: actions/checkout@v2
+        name: code Checkout
+
+      - id: step1
+        run: echo "::set-output name=env::${{ matrix.env }}"
+
+      - name: Run a one-line script
+        run: |
+          echo ${{ matrix.env }}-enviroment
+          echo $BACKEND_BUCKET
+          echo ${{ matrix.env }}
+  Dev:
+    name: 'Terraform Dev'
+    if: ${{ needs.plan.outputs.env_name  == 'dev' }}
+    needs: [plan]
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+    with:
+      directory_path: ./infra
+      environment: 'dev'
+  
+  Prod:
+    name: 'Terraform prod'
+    needs: [plan]
+    if: ${{ needs.plan.outputs.env_name  == 'prod' }}
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+    with:
+      directory_path: ./infra
+      environment: 'prod'
