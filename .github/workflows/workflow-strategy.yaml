@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
        matrix: ${{ steps.setmatrix.outputs.matrix }}
-    concurrency: 
-      group: ${{ github.event.inputs.customer_name }}-${{ github.head_ref }}
+    # concurrency: 
+    #   group: ${{ github.event.inputs.customer_name }}-${{ github.head_ref }}
     steps:
       - uses: actions/checkout@v2
         name: code Checkout
@@ -17,7 +17,6 @@ jobs:
         run: |
           echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
           export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
-          gcloud version
           echo ${CUSTOMER_NAME}
           echo ${CUSTOMER_NAME_EXPORT}
         
