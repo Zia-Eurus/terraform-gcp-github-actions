@@ -58,7 +58,7 @@ jobs:
           echo ${{ matrix.env }}
   Dev:
     name: 'Terraform Dev'
-    if: ${{ needs.plan.outputs.env_name  == 'dev' }}
+    # if: ${{ needs.plan.outputs.env_name  == 'dev' }}
     needs: [plan]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
@@ -68,7 +68,7 @@ jobs:
   Prod:
     name: 'Terraform prod'
     needs: [plan]
-    if: ${{ needs.plan.outputs.env_name  == 'prod' }}
+    # if: ${{ needs.plan.outputs.env_name  == 'prod' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
