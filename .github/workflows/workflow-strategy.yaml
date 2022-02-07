@@ -3,9 +3,6 @@ name: 'workflow_dispatch CI'
 on: 
   workflow_dispatch:
     inputs:
-      customer_name:
-        description: 'Name of the customer'
-        required: true
       target_env:
         type: choice
         options:
