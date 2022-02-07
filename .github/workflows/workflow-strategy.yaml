@@ -1,43 +1,83 @@
 name: 'workflow_dispatch CI'
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      customer_name:
+        description: 'Name of the customer'
+        required: true
+      target_env:
+        type: choice
+        options:
+        - dev
+        - prod
+        - all
+        description: 'Environment name (dev/prod/all)'
+        required: false
+        default: 'dev'
 
 jobs:
+  matrix-setup:
+    runs-on: ubuntu-latest
+    env: 
+      ENV: ${{ github.event.inputs.target_env }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set Dynamic Matrix
+        id: set-matrix
+        run: |
+          if [[ $ENV == "All" ]]; then
+            matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\",\"ip\":\"1.2.3.4\"},{\"env\":\"prod\",\"bucket\":\"bucket-prod\",\"ip\":\"1.2.3.5\"}]}"
+            echo "::set-output name=matrix::$matrixStringifiedObject"
+          elif [[ $ENV == "Lower" ]]; then
+            matrixStringifiedObject="{\"include\":[{\"env\":\"Lower\",\"consul_ip\":\"consul.sre-tools-lo.groupbycloud.com\",\"ip\":\"1.2.3.4\"}]}"
+            echo "::set-output name=matrix::$matrixStringifiedObject"
+          else
+            matrixStringifiedObject="{\"include\":[{\"env\":\"Upper\",\"consul_ip\":\"consul.sre-tools.groupbycloud.com\",\"ip\":\"1.2.3.5\"}]}"
+            echo "::set-output name=matrix::$matrixStringifiedObject"
+          fi
   do-it:
     runs-on: ubuntu-latest
-    outputs:
-       matrix: ${{ steps.setmatrix.outputs.matrix }}
+    # outputs:
+    #    matrix: ${{ steps.setmatrix.outputs.matrix }}
+    needs: matrix-setup
+    strategy:
+      matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
     # concurrency: 
     #   group: ${{ github.event.inputs.customer_name }}-${{ github.head_ref }}
     steps:
-      - uses: actions/checkout@v2
-        name: code Checkout
+      # - uses: actions/checkout@v2
+      #   name: code Checkout
 
-      - name: GITHUB_ENV & EXPORT
-        run: |
-          echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
-          export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
-          echo ${CUSTOMER_NAME}
-          echo ${CUSTOMER_NAME_EXPORT}
+      # - name: GITHUB_ENV & EXPORT
+      #   run: |
+      #     echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
+      #     export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
+      #     echo ${CUSTOMER_NAME}
+      #     echo ${CUSTOMER_NAME_EXPORT}
         
-      - name: ECHO GITHUB_ENV & EXPORT
+      - name: ECHO Hello
         run: |
-          echo ${CUSTOMER_NAME}
-          echo ${CUSTOMER_NAME_EXPORT}
+          echo "Hello world"
 
-      - id: setmatrix
-        name: Set Dynamic Matrix
-        run: |
-           matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\"},{\"env\":\"prod\",\"bucket\":\"bucket-prod\"}]}"
-           echo "::set-output name=matrix::$matrixStringifiedObject"
+      # - id: setmatrix
+      #   name: Set Dynamic Matrix
+      #   run: |
+      #      matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\"},{\"env\":\"prod\",\"bucket\":\"bucket-prod\"}]}"
+      #      echo "::set-output name=matrix::$matrixStringifiedObject"
+
   plan:
     runs-on: ubuntu-latest
-    needs: [do-it]
+    needs: ['do-it','matrix-setup']
+    strategy:
+      matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
+      fail-fast: false
     outputs:
       env_name: ${{ steps.step1.outputs.env }}
-    strategy:
-      matrix: ${{ fromJson(needs.do-it.outputs.matrix) }}
-      fail-fast: false
+    # strategy:
+    #   matrix: ${{ fromJson(needs.do-it.outputs.matrix) }}
+    #   fail-fast: false
     concurrency: 
       group: ${{ matrix.env }}-${{ github.head_ref }}
     env:
@@ -57,7 +97,7 @@ jobs:
           echo ${{ matrix.env }}
   Dev:
     name: 'Terraform Dev'
-    # if: ${{ needs.plan.outputs.env_name  == 'dev' }}
+    if: ${{ needs.plan.outputs.env_name  == 'dev' || needs.plan.outputs.env_name  == 'all' }}
     needs: [plan]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
@@ -67,7 +107,7 @@ jobs:
   Prod:
     name: 'Terraform prod'
     needs: [plan]
-    # if: ${{ needs.plan.outputs.env_name  == 'prod' }}
+    if: ${{ needs.plan.outputs.env_name  == 'prod' || needs.plan.outputs.env_name  == 'all' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
