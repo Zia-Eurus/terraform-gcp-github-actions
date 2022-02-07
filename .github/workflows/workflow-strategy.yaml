@@ -27,14 +27,14 @@ jobs:
       - name: Set Dynamic Matrix
         id: set-matrix
         run: |
-          if [[ $ENV == "All" ]]; then
+          if [[ $ENV == "all" ]]; then
             matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\",\"ip\":\"1.2.3.4\"},{\"env\":\"prod\",\"bucket\":\"bucket-prod\",\"ip\":\"1.2.3.5\"}]}"
             echo "::set-output name=matrix::$matrixStringifiedObject"
-          elif [[ $ENV == "Lower" ]]; then
-            matrixStringifiedObject="{\"include\":[{\"env\":\"Lower\",\"consul_ip\":\"consul.sre-tools-lo.groupbycloud.com\",\"ip\":\"1.2.3.4\"}]}"
+          elif [[ $ENV == "dev" ]]; then
+            matrixStringifiedObject="{\"include\":[{\"env\":\"dev\",\"bucket\":\"bucket-dev\",\"ip\":\"1.2.3.4\"}]}"
             echo "::set-output name=matrix::$matrixStringifiedObject"
           else
-            matrixStringifiedObject="{\"include\":[{\"env\":\"Upper\",\"consul_ip\":\"consul.sre-tools.groupbycloud.com\",\"ip\":\"1.2.3.5\"}]}"
+            matrixStringifiedObject="{\"include\":[{\"env\":\"prod\",\"bucket\":\"bucket-prod\",\"ip\":\"1.2.3.5\"}]}"
             echo "::set-output name=matrix::$matrixStringifiedObject"
           fi
   do-it:
