@@ -81,9 +81,6 @@ jobs:
       BACKEND_BUCKET: ${{ matrix.bucket }}
       ENV: ${{ matrix.env }}
     steps:
-      - uses: actions/checkout@v2
-        name: code Checkout
-
       - id: step1
         run: echo "::set-output name=env::${{ matrix.env }}"
 
@@ -92,18 +89,27 @@ jobs:
           echo ${{ matrix.env }}-enviroment
           echo $BACKEND_BUCKET
           echo ${{ matrix.env }}
+
+  Apply:
+    runs-on: ubuntu-latest
+    needs: ['matrix-setup','do-it','plan']
+    strategy:
+      matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - name: apply
+        run: echo "Apply"
+
   Dev:
-    name: 'Terraform Dev'
     if: ${{ needs.plan.outputs.env_name  == 'dev' || needs.plan.outputs.env_name  == 'all' }}
-    needs: [plan]
+    needs: [Apply]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
       environment: 'dev'
   
   Prod:
-    name: 'Terraform prod'
-    needs: [plan]
+    needs: [Apply]
     if: ${{ needs.plan.outputs.env_name  == 'prod' || needs.plan.outputs.env_name  == 'all' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
