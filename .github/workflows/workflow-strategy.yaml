@@ -100,18 +100,18 @@ jobs:
       - name: apply
         run: echo "Apply"
 
-  Dev:
-    if: ${{ needs.plan.outputs.env_name  == 'dev' || needs.plan.outputs.env_name  == 'all' }}
-    needs: [Apply]
-    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
-    with:
-      directory_path: ./infra
-      environment: 'dev'
+  # Dev:
+  #   if: ${{ needs.plan.outputs.env_name  == 'dev' || needs.plan.outputs.env_name  == 'all' }}
+  #   needs: [Apply]
+  #   uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+  #   with:
+  #     directory_path: ./infra
+  #     environment: 'dev'
   
-  Prod:
-    needs: [Apply]
-    if: ${{ needs.plan.outputs.env_name  == 'prod' || needs.plan.outputs.env_name  == 'all' }}
-    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
-    with:
-      directory_path: ./infra
-      environment: 'prod'
+  # Prod:
+  #   needs: [Apply]
+  #   if: ${{ needs.plan.outputs.env_name  == 'prod' || needs.plan.outputs.env_name  == 'all' }}
+  #   uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+  #   with:
+  #     directory_path: ./infra
+  #     environment: 'prod'
