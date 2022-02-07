@@ -89,6 +89,9 @@ jobs:
           echo ${{ matrix.env }}-enviroment
           echo $BACKEND_BUCKET
           echo ${{ matrix.env }}
+          if [[ $ENV == 'dev' ]]; then
+            sleep 60
+          fi
 
   Apply:
     runs-on: ubuntu-latest
