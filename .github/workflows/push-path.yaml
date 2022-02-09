@@ -30,20 +30,27 @@ jobs:
           mkdir -p ./workspace-consul-integration/archive/${name} 
           mv ./workspace-consul-integration/cleanup/$file ./workspace-consul-integration/archive/${name}/${name}_${dt}_cleanup_processed.csv
           done
-
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git pull origin main
-          git add .
-          git commit -m "Add changes" -a || echo "No changes to commit"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      
+      - uses: EndBug/add-and-commit@v8
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main # ${{ github.ref }}
+          default_author: github_actions
+          message: Add changes
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+
+      # - name: Commit files
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git pull origin main
+      #     git add .
+      #     git commit -m "Add changes" -a || echo "No changes to commit"
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: main # ${{ github.ref }}
 
   Dev:
     name: 'Terraform Dev'
