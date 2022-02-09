@@ -13,3 +13,11 @@ jobs:
     steps:
       - name: Run a one-line script
         run: echo "Hello World"
+
+  Dev:
+    name: 'Terraform Dev'
+    needs: [do-it]
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+    with:
+      directory_path: ./infra
+      environment: 'dev'
