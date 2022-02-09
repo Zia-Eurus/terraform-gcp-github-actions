@@ -6,13 +6,44 @@ on:
     branches:    
       - 'main'
     paths:
-      - 'file/**'
+      - 'workspace-consul-integration/cleanup_requests/**'
 jobs:
   do-it:
     runs-on: ubuntu-latest
     steps:
-      - name: Run a one-line script
-        run: echo "Hello World"
+      - name: Copy cleanup_requests folder content to the cleanup
+        run: |
+          for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
+          echo $file
+          name=${file%.*}
+          echo name
+          mv ./workspace-consul-integration/cleanup_requests/$file ./workspace-consul-integration/cleanup/$file
+          done
+
+      - name: Archiving all the processed CSV requests
+        run: |
+          dt=$(date +%Y%m%d%H%M%S)
+          for file in $(ls ./workspace-consul-integration/cleanup -p | grep -v / | grep '.csv$'); do
+          echo $file
+          echo ${file%.*}
+          name=${file%.*}
+          mkdir -p ./workspace-consul-integration/archive/${name} 
+          mv ./workspace-consul-integration/cleanup/$file ./workspace-consul-integration/archive/${name}/${name}_${dt}_cleanup_processed.csv
+          done
+
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git pull origin main
+          git add .
+          git commit -m "Add changes" -a || echo "No changes to commit"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main # ${{ github.ref }}
 
   Dev:
     name: 'Terraform Dev'
