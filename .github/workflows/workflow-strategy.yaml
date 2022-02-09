@@ -36,8 +36,9 @@ jobs:
           fi
   do-it:
     runs-on: ubuntu-latest
-    # outputs:
-    #    matrix: ${{ steps.setmatrix.outputs.matrix }}
+    outputs:
+      env_name: ${{ steps.step1.outputs.env }}
+    # matrix: ${{ steps.setmatrix.outputs.matrix }}
     needs: matrix-setup
     strategy:
       matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
@@ -57,6 +58,9 @@ jobs:
       - name: ECHO Hello
         run: |
           echo "Hello world"
+
+      - id: step1
+        run: echo "::set-output name=env::${{ matrix.env }}"
 
       # - id: setmatrix
       #   name: Set Dynamic Matrix
