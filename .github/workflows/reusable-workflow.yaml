@@ -6,7 +6,7 @@ on:
       directory_path:
         required: false
         type: string
-        default: './infra'
+        default: 'infra'
       environment:
         required: true
         type: string
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || github.event.inputs.environment }}
     env:
-      head_ref: ${{ github.head_ref }}
+      head_ref: ${{ github.head_ref || github.ref }}
       directory_path: ${{ inputs.directory_path || github.event.inputs.directory_path }}
       environment: ${{ inputs.environment || github.event.inputs.environment }}
       PROJECT_ID: "eurus-project-dev"
