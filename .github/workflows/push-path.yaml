@@ -20,7 +20,7 @@ jobs:
         run: |
           for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
           echo $file
-          customer_name=awk -F',' '{ if ($1 = "Customer_Name") { print $2 } }' ./workspace-consul-integration/cleanup_requests/$file
+          customer_name= awk -F',' '{ if ($1 = "Customer_Name") { print $2 } }' ./workspace-consul-integration/cleanup_requests/$file
           echo "::set-output name=name::$customer_name"
           done
   # do-it:
