@@ -4,11 +4,26 @@ on:
   workflow_call:
     inputs:
       directory_path:
-        required: true
+        required: false
         type: string
+        default: './infra'
       environment:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      directory_path:
+        required: true
+        type: string
+        description: 'Directory on which terraform execute'
+      environment:
+        required: true
+        type: choice
+        description: 'Environment name (dev/prod)'
+        options:
+        - dev
+        - prod
+        - all 
 
 concurrency: 
   group: ${{ inputs.environment }}-${{ github.head_ref }}

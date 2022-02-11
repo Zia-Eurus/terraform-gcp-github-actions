@@ -9,48 +9,61 @@ on:
     paths:
       - 'workspace-consul-integration/cleanup_requests/**'
 jobs:
-  do-it:
+  customer_name:
     runs-on: ubuntu-latest
+    outputs:
+      customer_name: ${{ steps.customer_name.outputs.name }}
     steps:
       - uses: actions/checkout@v2
-      - name: Copy cleanup_requests folder content to the cleanup
+      - name: extract customer_name
+        id: customer_name
         run: |
           for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
           echo $file
-          name=${file%.*}
-          echo name
-          mv ./workspace-consul-integration/cleanup_requests/$file ./workspace-consul-integration/cleanup/$file
+          customer_name= awk -F',' '{ if ($1 = "Customer_Name") { print $2 } }' ./workspace-consul-integration/cleanup_requests/$file
+          echo "::set-output name=name::$customer_name"
           done
+  # do-it:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Copy cleanup_requests folder content to the cleanup
+  #       run: |
+  #         for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
+  #         echo $file
+  #         name=${file%.*}
+  #         echo name
+  #         mv ./workspace-consul-integration/cleanup_requests/$file ./workspace-consul-integration/cleanup/$file
+  #         done
 
-      - name: Archiving all the processed CSV requests
-        run: |
-          dt=$(date +%Y%m%d%H%M%S)
-          for file in $(ls ./workspace-consul-integration/cleanup -p | grep -v / | grep '.csv$'); do
-          echo $file
-          echo ${file%.*}
-          name=${file%.*}
-          mkdir -p ./workspace-consul-integration/archive/${name} 
-          mv ./workspace-consul-integration/cleanup/$file ./workspace-consul-integration/archive/${name}/${name}_${dt}_cleanup_processed.csv
-          done
+  #     - name: Archiving all the processed CSV requests
+  #       run: |
+  #         dt=$(date +%Y%m%d%H%M%S)
+  #         for file in $(ls ./workspace-consul-integration/cleanup -p | grep -v / | grep '.csv$'); do
+  #         echo $file
+  #         echo ${file%.*}
+  #         name=${file%.*}
+  #         mkdir -p ./workspace-consul-integration/archive/${name} 
+  #         mv ./workspace-consul-integration/cleanup/$file ./workspace-consul-integration/archive/${name}/${name}_${dt}_cleanup_processed.csv
+  #         done
           
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git pull origin main
-          git add .
-          git commit -m "Add changes" -a || echo "No changes to commit"
+  #     - name: Commit files
+  #       run: |
+  #         git config --local user.email "action@github.com"
+  #         git config --local user.name "GitHub Action"
+  #         git pull origin main
+  #         git add .
+  #         git commit -m "Add changes" -a || echo "No changes to commit"
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+  #     - name: Push changes
+  #       uses: ad-m/github-push-action@master
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         branch: main
 
   Dev:
-    name: 'Terraform Dev'
-    needs: [do-it]
+    needs: customer_name
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
-      directory_path: ./infra
-      environment: 'dev'
+      # directory_path: ./infra
+      environment: ${{needs.customer_name.outputs.name}}
