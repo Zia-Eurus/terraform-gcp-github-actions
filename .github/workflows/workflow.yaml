@@ -23,21 +23,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
-      - name: Run a one-line script
-        run: |
-          envsubst -V
-          jq -Version
-          gcloud version
-          aws --version     
-        # apt-get update && apt-get install -y \
-        # gettext-base
-        # gcloud version
-        # After Install package any single command is mandarory either echo "Hello"
       - name: GITHUB_ENV & EXPORT
         run: |
           echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
           export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
-          gcloud version
           echo ${CUSTOMER_NAME}
           echo ${CUSTOMER_NAME_EXPORT}
         
@@ -46,14 +35,32 @@ jobs:
           echo ${CUSTOMER_NAME}
           echo ${CUSTOMER_NAME_EXPORT}
 
-  Dev:
-    name: 'Terraform Dev'
-    if: ${{ github.event.inputs.customer_name  == 'dev' }}
-    needs: [do-it]
-    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
-    with:
-      directory_path: ./infra
-      environment: 'dev'
+      - name: copy file and trigger pipeline
+        run: |-
+          cp -R -f ./workspace-consul-integration/customer_input ./workspace-consul-integration/cleanup_requests
+
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git pull origin main
+          git add .
+          git commit -m "Add changes" -a || echo "No changes to commit"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
+  # Dev:
+  #   name: 'Terraform Dev'
+  #   if: ${{ github.event.inputs.customer_name  == 'dev' }}
+  #   needs: [do-it]
+  #   uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+  #   with:
+  #     directory_path: ./infra
+  #     environment: 'dev'
   
   Prod:
     name: 'Terraform prod'
