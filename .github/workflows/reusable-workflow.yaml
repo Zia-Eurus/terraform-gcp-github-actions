@@ -26,7 +26,7 @@ on:
         - all 
 
 concurrency: 
-  group: ${{ inputs.environment || github.inputs.environment }}-${{ github.head_ref }}
+  group: ${{ inputs.environment || github.event.inputs.environment }}-${{ github.head_ref || github.ref }}
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -34,11 +34,11 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || github.inputs.environment }}
+    environment: ${{ inputs.environment || github.event.inputs.environment }}
     env:
       head_ref: ${{ github.head_ref }}
-      directory_path: ${{ inputs.directory_path || github.inputs.directory_path }}
-      environment: ${{ inputs.environment || github.inputs.environment }}
+      directory_path: ${{ inputs.directory_path || github.event.inputs.directory_path }}
+      environment: ${{ inputs.environment || github.event.inputs.environment }}
       PROJECT_ID: "eurus-project-dev"
       PROJECT_NUMBER: "103365112501"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
