@@ -27,9 +27,6 @@ on:
 
 concurrency: 
   group: ${{ inputs.environment || github.event.inputs.environment }}-${{ github.head_ref || github.ref }}
-env:
-  HEAD: ${{ github.head_ref || github.ref }}
-  ENVIRONMENT: ${{ inputs.environment || github.event.inputs.environment }}
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -37,8 +34,10 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: ${{env.ENVIRONMENT}}
+    environment: ${{ inputs.environment || github.event.inputs.environment }}
     env:
+      HEAD: ${{ github.head_ref || github.ref }}
+      ENVIRONMENT: ${{ inputs.environment || github.event.inputs.environment }}
       directory_path: ${{ inputs.directory_path || github.event.inputs.directory_path }}
       PROJECT_ID: "eurus-project-dev"
       PROJECT_NUMBER: "103365112501"
