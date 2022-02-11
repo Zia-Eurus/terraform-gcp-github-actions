@@ -26,7 +26,7 @@ jobs:
           echo "$customer_name-AfterDoubleQuoteRemoved"
           if [ -z "$customer_name" ]
           then
-              customer_name="Customer_Not_Found"
+              customer_name=Customer_Not_Found
               echo "::set-output name=name::$customer_name"
           else
               echo "::set-output name=name::$customer_name"
@@ -72,7 +72,7 @@ jobs:
 
   Dev:
     needs: customer_name
-    if: ${{ needs.customer_name.outputs.name  != "Customer_Not_Found" }}
+    if: ${{ needs.customer_name.outputs.name  != 'Customer_Not_Found' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       # directory_path: ./infra
