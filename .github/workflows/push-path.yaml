@@ -12,11 +12,11 @@ jobs:
   customer_name:
     runs-on: ubuntu-latest
     outputs:
-      customer_name: ${{ steps.customer_name.outputs.name }}
+      customer-name: ${{ steps.customer_name_id.outputs.name }}
     steps:
       - uses: actions/checkout@v2
       - name: extract customer_name
-        id: customer_name
+        id: customer_name_id
         run: |
           customer_name=Empty
           for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
@@ -68,8 +68,8 @@ jobs:
 
   Dev:
     needs: customer_name
-    if: ${{ needs.customer_name.outputs.name  != 'Empty' }}
+    if: ${{ needs.customer_name.outputs.customer-name  != 'Empty' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       # directory_path: ./infra
-      environment: ${{needs.customer_name.outputs.name}}
+      environment: ${{needs.customer_name.outputs.customer-name}}
