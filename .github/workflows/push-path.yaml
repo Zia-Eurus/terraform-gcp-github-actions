@@ -18,20 +18,16 @@ jobs:
       - name: extract customer_name
         id: customer_name
         run: |
+          customer_name=Empty
           for file in $(ls ./workspace-consul-integration/cleanup_requests -p | grep -v / | grep '.csv$'); do
           echo $file
           customer_name=$(awk -F',' '{ if ($1 = "Customer_Name") { print $2 } }' ./workspace-consul-integration/cleanup_requests/$file)
           echo "$customer_name-InitiallyWithDoubleQuote"
           customer_name=$(sed -e 's/^"//' -e 's/"$//' <<<"$customer_name")
           echo "$customer_name-AfterDoubleQuoteRemoved"
-          if [ -z "$customer_name" ]
-          then
-              customer_name=Customer_Not_Found
-              echo "::set-output name=name::$customer_name"
-          else
-              echo "::set-output name=name::$customer_name"
-          fi
           done
+           echo "$customer_name-AfterLoop"
+          echo "::set-output name=name::$customer_name"
   # do-it:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -72,7 +68,7 @@ jobs:
 
   Dev:
     needs: customer_name
-    if: ${{ needs.customer_name.outputs.name  != 'Customer_Not_Found' }}
+    if: ${{ needs.customer_name.outputs.name  != 'Empty' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       # directory_path: ./infra
