@@ -26,7 +26,7 @@ on:
         - all 
 
 concurrency: 
-  group: ${{ inputs.environment }}-${{ github.head_ref }}
+  group: ${{ inputs.environment || github.inputs.environment }}-${{ github.head_ref }}
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -34,10 +34,11 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.environment || github.inputs.environment }}
     env:
-      directory_path: ${{ inputs.directory_path }}
-      environment: ${{ inputs.environment }}
+      head_ref: ${{ github.head_ref }}
+      directory_path: ${{ inputs.directory_path || github.inputs.directory_path }}
+      environment: ${{ inputs.environment || github.inputs.environment }}
       PROJECT_ID: "eurus-project-dev"
       PROJECT_NUMBER: "103365112501"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -48,6 +49,7 @@ jobs:
     steps:
     - name: echo env variables
       run: |
+        echo $head_ref
         echo $directory_path
         echo $environment
 
@@ -69,20 +71,20 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ${{ inputs.directory_path }}
+      working-directory: $directory_path
       run: |
         pwd
         gcloud version
         terraform init
 
     - name: Terraform Format
-      working-directory: ${{ inputs.directory_path }}
+      working-directory: $directory_path
       run: |
         pwd
         terraform fmt -check
 
     - name: Terraform Plan
-      working-directory: ${{ inputs.directory_path }}
+      working-directory: $directory_path
       run: |
         pwd
         terraform plan -lock=false
@@ -90,7 +92,7 @@ jobs:
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
-      working-directory: ${{ inputs.directory_path }}
+      working-directory: $directory_path
       if: github.ref == 'refs/heads/main' # && github.event_name == 'push'
       run: |
         pwd
