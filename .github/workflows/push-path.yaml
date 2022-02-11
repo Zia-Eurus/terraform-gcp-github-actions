@@ -24,7 +24,7 @@ jobs:
           echo "$customer_name-InitiallyWithDoubleQuote"
           customer_name=$(sed -e 's/^"//' -e 's/"$//' <<<"$customer_name")
           echo "$customer_name-AfterDoubleQuoteRemoved"
-          if [ -z "$var" ]
+          if [ -z "$customer_name" ]
           then
               customer_name="Customer_Not_Found"
               echo "::set-output name=name::$customer_name"
