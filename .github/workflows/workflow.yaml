@@ -37,7 +37,7 @@ jobs:
 
       - name: copy file and trigger pipeline
         run: |-
-          cp -R -f ./workspace-consul-integration/customer_input ./workspace-consul-integration/cleanup_requests
+          cp -R -f ./workspace-consul-integration/customer_input/ ./workspace-consul-integration/cleanup_requests/
 
       - name: Commit files
         run: |
