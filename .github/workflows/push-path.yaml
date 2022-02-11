@@ -24,7 +24,13 @@ jobs:
           echo "$customer_name-InitiallyWithDoubleQuote"
           customer_name=$(sed -e 's/^"//' -e 's/"$//' <<<"$customer_name")
           echo "$customer_name-AfterDoubleQuoteRemoved"
-          echo "::set-output name=name::$customer_name"
+          if [ -z "$var" ]
+          then
+              customer_name="Customer_Not_Found"
+              echo "::set-output name=name::$customer_name"
+          else
+              echo "::set-output name=name::$customer_name"
+          fi
           done
   # do-it:
   #   runs-on: ubuntu-latest
@@ -66,7 +72,7 @@ jobs:
 
   Dev:
     needs: customer_name
-    if: ${{ needs.customer_name.outputs.name  == "\"(\\.|[^"\\])*\"" }}
+    if: ${{ needs.customer_name.outputs.name  != "Customer_Not_Found" }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       # directory_path: ./infra
