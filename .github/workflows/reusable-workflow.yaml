@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       directory_path:
-        required: false
+        required: true
         type: string
         default: './infra'
       environment:
@@ -36,8 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
-      INIT: init
-      PROJECT_ID: "eurus-project-dev" #${{ github.event.inputs.project_id }}
+      directory_path: ${{ inputs.directory_path }}
+      environment: ${{ inputs.environment }}
+      PROJECT_ID: "eurus-project-dev"
       PROJECT_NUMBER: "103365112501"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -45,6 +46,11 @@ jobs:
         shell: bash
 
     steps:
+    - name: echo env variables
+      run: |
+        echo $directory_path
+        echo $environment
+
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
