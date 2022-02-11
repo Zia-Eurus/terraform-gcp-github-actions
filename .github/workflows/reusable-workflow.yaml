@@ -18,15 +18,18 @@ on:
         description: 'Directory on which terraform execute'
       environment:
         required: true
-        type: choice
+        type: string
         description: 'Environment name (dev/prod)'
-        options:
-        - dev
-        - prod
-        - all 
+        # options:
+        # - dev
+        # - prod
+        # - all 
 
 concurrency: 
-  group: ${{ inputs.environment || github.event.inputs.environment }}-${{ github.head_ref || github.ref }}
+  group: ${{env.ENVIRONMENT}}-${{env.HEAD}}
+env:
+  HEAD: ${{ github.head_ref || github.ref }}
+  ENVIRONMENT: ${{ inputs.environment || github.event.inputs.environment }}
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -34,11 +37,9 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || github.event.inputs.environment }}
+    environment: ${{env.ENVIRONMENT}}
     env:
-      head_ref: ${{ github.head_ref || github.ref }}
       directory_path: ${{ inputs.directory_path || github.event.inputs.directory_path }}
-      environment: ${{ inputs.environment || github.event.inputs.environment }}
       PROJECT_ID: "eurus-project-dev"
       PROJECT_NUMBER: "103365112501"
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -49,9 +50,9 @@ jobs:
     steps:
     - name: echo env variables
       run: |
-        echo $head_ref
+        echo $HEAD
         echo $directory_path
-        echo $environment
+        echo $ENVIRONMENT
 
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
