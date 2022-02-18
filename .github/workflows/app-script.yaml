@@ -1,0 +1,20 @@
+name: app script
+on:
+  workflow_dispatch:
+    inputs:
+        customer_name:
+          description: 'Name of the customer'
+          required: true
+  push:
+    branches:    
+      - 'main'
+    paths:
+      - 'workspace-consul-integration/cleanup_requests/**'
+jobs:
+  customer_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: |
+          echo "Hello World"
+          echo ${{github.event.inputs.customer_name}}
