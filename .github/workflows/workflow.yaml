@@ -24,20 +24,20 @@ jobs:
 #           persist-credentials: false
 #           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
 
       - name: GITHUB_ENV & EXPORT
         run: |
           echo "CUSTOMER_NAME=${{ github.event.inputs.customer_name  }}" >> $GITHUB_ENV
           export CUSTOMER_NAME_EXPORT="${{ github.event.inputs.customer_name  }}"
-          echo ${CUSTOMER_NAME}
-          echo ${CUSTOMER_NAME_EXPORT}
+          echo "GITHUB_ENV ${CUSTOMER_NAME}"
+          echo "export ${CUSTOMER_NAME_EXPORT}"
         
       - name: ECHO GITHUB_ENV & EXPORT
         run: |
-          echo ${CUSTOMER_NAME}
-          echo ${CUSTOMER_NAME_EXPORT}
+          echo "GITHUB_ENV ${CUSTOMER_NAME}"
+          echo "export ${CUSTOMER_NAME_EXPORT}"
 
 #       - name: copy file and trigger pipeline
 #         run: |-
@@ -83,7 +83,7 @@ jobs:
   Prod:
     name: 'Terraform prod'
     needs: [do-it]
-    if: ${{ github.event.inputs.customer_name  == 'prod' || 'dev' }}
+    if: github.event.inputs.customer_name  == 'prod' || github.event.inputs.customer_name  == 'dev'
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
