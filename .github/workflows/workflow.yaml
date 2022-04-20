@@ -21,8 +21,8 @@ jobs:
         name: code Checkout
         with:
           ref: main
-          persist-credentials: false
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           persist-credentials: false
+#           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -39,37 +39,51 @@ jobs:
           echo ${CUSTOMER_NAME}
           echo ${CUSTOMER_NAME_EXPORT}
 
-      - name: copy file and trigger pipeline
-        run: |-
-          cp -R -f ./workspace-consul-integration/customer_input/* ./workspace-consul-integration/cleanup_requests/
+#       - name: copy file and trigger pipeline
+#         run: |-
+#           cp -R -f ./workspace-consul-integration/customer_input/* ./workspace-consul-integration/cleanup_requests/
 
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git pull origin main
-          git add .
-          git commit -m "Add changes" -a || echo "No changes to commit"
+#       - name: Commit files
+#         run: |
+#           git config --local user.email "action@github.com"
+#           git config --local user.name "GitHub Action"
+#           git pull origin main
+#           git add .
+#           git commit -m "Add changes" -a || echo "No changes to commit"
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+#       - name: Push changes
+#         uses: ad-m/github-push-action@master
+#         with:
+#           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           branch: main
+
+  Plan:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.customer_name  == 'dev' }}
+    needs: [do-it]
+    steps:
+      - uses: actions/checkout@v2
+        name: code Checkout
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch: main
-
-  # Dev:
-  #   name: 'Terraform Dev'
-  #   if: ${{ github.event.inputs.customer_name  == 'dev' }}
-  #   needs: [do-it]
-  #   uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
-  #   with:
-  #     directory_path: ./infra
-  #     environment: 'dev'
+          ref: main
+      - name: ECHO
+        run: |
+          echo "Hellow ${CUSTOMER_NAME}" 
+    
+    
+  Dev:
+    name: 'Terraform Dev'
+    if: ${{ github.event.inputs.customer_name  == 'dev' }}
+    needs: [Plan]
+    uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
+    with:
+      directory_path: ./infra
+      environment: 'dev'
   
   Prod:
     name: 'Terraform prod'
     needs: [do-it]
-    if: ${{ github.event.inputs.customer_name  == 'prod' }}
+    if: ${{ github.event.inputs.customer_name  == 'prod' || 'dev' }}
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
       directory_path: ./infra
