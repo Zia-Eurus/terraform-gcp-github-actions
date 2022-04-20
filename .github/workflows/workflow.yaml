@@ -70,7 +70,7 @@ jobs:
     if: ${{ github.event.inputs.customer_name  == 'dev' }}
     needs: [do-it]
     strategy:
-      matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.do-it.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2
         name: code Checkout
