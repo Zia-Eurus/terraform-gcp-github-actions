@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: 
       group: ${{ github.event.inputs.customer_name }}-${{ github.head_ref }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v2
         name: code Checkout
@@ -38,6 +40,12 @@ jobs:
         run: |
           echo "GITHUB_ENV ${CUSTOMER_NAME}"
           echo "export ${CUSTOMER_NAME_EXPORT}"
+          
+      - name: Set Matrix
+        id: set-matrix
+        run: |
+          matrixStringifiedObject="{\"include\":[{\"env\":\"lower\"},{\"env\":\"upper\"}]}"
+          echo "::set-output name=matrix::$matrixStringifiedObject"
 
 #       - name: copy file and trigger pipeline
 #         run: |-
@@ -61,6 +69,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.customer_name  == 'dev' }}
     needs: [do-it]
+    strategy:
+      matrix: ${{ fromJson(needs.matrix-setup.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2
         name: code Checkout
@@ -68,11 +78,10 @@ jobs:
           ref: main
       - name: ECHO
         run: |
-          echo "Hellow ${CUSTOMER_NAME}" 
+          echo "Hello ${CUSTOMER_NAME}" 
     
     
   Dev:
-    name: 'Terraform Dev'
     if: ${{ github.event.inputs.customer_name  == 'dev' }}
     needs: [Plan]
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
@@ -81,8 +90,7 @@ jobs:
       environment: 'dev'
   
   Prod:
-    name: 'Terraform prod'
-    needs: [do-it]
+    needs: [Plan]
     if: github.event.inputs.customer_name  == 'prod' || github.event.inputs.customer_name  == 'dev'
     uses: Zia-Eurus/terraform-gcp-github-actions/.github/workflows/reusable-workflow.yaml@main
     with:
