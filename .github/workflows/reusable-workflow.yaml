@@ -49,6 +49,8 @@ jobs:
     steps:
     - name: echo env variables
       run: |
+        echo "workflow call ${{github.ref}}"
+        echo "workflow disp ${{github.head_ref}}"
         echo $HEAD
         echo $directory_path
         echo $ENVIRONMENT
