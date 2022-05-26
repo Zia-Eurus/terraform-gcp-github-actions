@@ -10,10 +10,11 @@ jobs:
       with:
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         ref: main
+        token: ${{ secrets.GIT_TOKEN }}
         
     - name: file creaded
       run: |
-        touch newemptyfile
+        touch newemptyfile1
         
     - name: Commit files
       run: |
