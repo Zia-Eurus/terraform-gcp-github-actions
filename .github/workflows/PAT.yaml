@@ -14,7 +14,7 @@ jobs:
         
     - name: file creaded
       run: |
-        touch newemptyfile11
+        echo "Hello" > newemptyfile11
         
     - name: Commit files
       run: |
