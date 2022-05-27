@@ -8,13 +8,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+#         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         ref: main
-        token: ${{ secrets.GIT_TOKEN }}
+#         token: ${{ secrets.GIT_TOKEN }}
         
     - name: file creaded
       run: |
-        touch newemptyfile1
+        touch newemptyfile11
         
     - name: Commit files
       run: |
