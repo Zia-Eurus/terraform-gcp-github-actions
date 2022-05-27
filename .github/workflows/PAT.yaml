@@ -8,9 +8,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+#         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         ref: main
-#         token: ${{ secrets.GIT_TOKEN }}
+        token: ${{ secrets.GIT_TOKEN }}
         
     - name: file creaded
       run: |
@@ -18,8 +18,8 @@ jobs:
         
     - name: Commit files
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "zia.ur.rehman@eurustechnologies.com"
+        git config --local user.name "Zia-Eurus"
         git pull origin main
         git add .
         git commit -m "Add changes" -a || echo "No changes to commit"
