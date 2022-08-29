@@ -78,7 +78,8 @@ jobs:
           ref: main
       - name: ECHO
         run: |
-          echo "Hello ${CUSTOMER_NAME}" 
+          echo "GITHUB_ENV ${CUSTOMER_NAME}"
+          echo "export ${CUSTOMER_NAME_EXPORT}"
     
     
   Dev:
